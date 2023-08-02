@@ -1,21 +1,26 @@
 package com;
+
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 
 @Controller
 public class QuizController {
 
+     @Autowired
+    private RestTemplate restTemplate;
+    
     private static final String API_URL = "https://opentdb.com/api.php?amount=10";
-
-    private RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/")
     public String index(Model model) {
@@ -25,17 +30,16 @@ public class QuizController {
     }
 
     @PostMapping("/submit")
-    public String submit(Question[] questions, Model model) {
-        int score = 0;
-
-        for (Question question : questions) {
-            if (question.getChosenAnswer().equalsIgnoreCase(question.getCorrectAnswer())) {
-                score++;
-            }
-        }
-
+    public String submit(@ModelAttribute("questions") Question[] questions, Model model) {
+        int score = calculateScore(questions);
         model.addAttribute("score", score);
         return "result";
+    }
+
+    private int calculateScore(Question[] questions) {
+        return (int) Arrays.stream(questions)
+                .filter(question -> question.getChosenAnswer().equalsIgnoreCase(question.getCorrectAnswer()))
+                .count();
     }
 
     private List<Question> fetchQuestionsFromApi() {
