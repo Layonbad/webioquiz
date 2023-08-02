@@ -4,8 +4,10 @@ public class TriviaResponse {
     private List<Question> results;
 
     public List<Question> getResults() {
-        return null;
+        return results;
     }
 
-    // Getter and setter for results
+    public void setResults(List<Question> results) {
+        this.results = results;
+    }
 }

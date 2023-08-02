@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -11,17 +9,18 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class QuizController {
 
-    private static final String API_URL = "https://opentdb.com/api.php?amount=3&type=multiple"; // Example API URL
+    private static final String API_URL = "https://opentdb.com/api.php?amount=10";
 
     private RestTemplate restTemplate = new RestTemplate();
 
-
     @GetMapping("/")
-    public String index() {
+    public String index(Model model) {
+        List<Question> questions = fetchQuestionsFromApi();
+        model.addAttribute("questions", questions); // Add questions to the model
         return "index";
     }
 
-     @PostMapping("/submit")
+    @PostMapping("/submit")
     public String submit(String[] userAnswers, Model model) {
         List<Question> questions = fetchQuestionsFromApi();
         int score = 0;
