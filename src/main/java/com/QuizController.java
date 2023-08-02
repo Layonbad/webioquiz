@@ -1,5 +1,9 @@
+package com;
 import java.util.List;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,20 +25,28 @@ public class QuizController {
     }
 
     @PostMapping("/submit")
-    public String submit(String[] userAnswers, Model model) {
-        List<Question> questions = fetchQuestionsFromApi();
+    public String submit(Question[] questions, Model model) {
         int score = 0;
-        for (int i = 0; i < questions.size(); i++) {
-            if (userAnswers[i].equalsIgnoreCase(questions.get(i).getAnswer())) {
+
+        for (Question question : questions) {
+            if (question.getChosenAnswer().equalsIgnoreCase(question.getCorrectAnswer())) {
                 score++;
             }
         }
+
         model.addAttribute("score", score);
         return "result";
     }
 
     private List<Question> fetchQuestionsFromApi() {
-        TriviaResponse response = restTemplate.getForObject(API_URL, TriviaResponse.class);
-        return response.getResults();
+        ResponseEntity<TriviaResponse> responseEntity = restTemplate.exchange(API_URL, HttpMethod.GET, null,
+                TriviaResponse.class);
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            TriviaResponse response = responseEntity.getBody();
+            if (response != null) {
+                return response.getResults();
+            }
+        }
+        throw new RuntimeException("Failed to fetch questions from API");
     }
 }
