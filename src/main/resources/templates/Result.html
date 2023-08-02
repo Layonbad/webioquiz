@@ -1,9 +1,41 @@
-<html xmlns:th="">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.4.3/css/bootstrap.min.css}">
     <title>Quiz Result</title>
 </head>
 <body>
-    <h2>Your Quiz Result</h2>
-    <p>Your score: <span th:text="${score}"></span></p>
+    <div class="container mt-5">
+        <div class="jumbotron text-center">
+            <h1 class="display-4">Quiz Result</h1>
+            <p class="lead">Your Score: <span th:text="${score}"></span></p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Your Answer</th>
+                            <th>Correct Answer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="index : ${questions}">
+                            <td th:text="${questions[index][0]}"></td>
+                            <td th:text="${userAnswers[index]}"></td>
+                            <td th:text="${questions[index][1]}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/2.11.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.4.3/js/bootstrap.min.js}"></script>
 </body>
 </html>
